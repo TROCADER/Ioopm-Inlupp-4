@@ -6,8 +6,8 @@ import org.ioopm.calculator.ast.Variable;
 import java.util.HashSet;
 
 public class ReassignmentChecker extends AstChecker {
-    final HashSet<Variable> boundVariables = new HashSet<>();
-    final HashSet<Variable> reassignedVariables = new HashSet<>();
+    private final HashSet<Variable> boundVariables = new HashSet<>();
+    private final HashSet<Variable> reassignedVariables = new HashSet<>();
 
     @Override
     public Boolean visit(Assignment n) {
@@ -23,5 +23,9 @@ public class ReassignmentChecker extends AstChecker {
         return otherResults;
 
 
+    }
+
+    public HashSet<Variable> getReassignedVariables() {
+        return reassignedVariables;
     }
 }
