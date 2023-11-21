@@ -2,7 +2,7 @@ package org.ioopm.calculator.ast;
 
 import org.ioopm.calculator.ast.visitor.Visitor;
 
-public class Variable extends Atom implements Comparable<Variable> {
+public class Variable extends Atom {
     public Variable(String identifier) {
         this.identifier = identifier;
     }
