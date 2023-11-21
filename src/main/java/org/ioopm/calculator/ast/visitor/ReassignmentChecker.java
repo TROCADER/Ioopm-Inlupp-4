@@ -11,7 +11,7 @@ public class ReassignmentChecker extends AstChecker {
 
     @Override
     public Boolean visit(Assignment n) {
-        super.visit(n);
+        boolean otherResults = super.visit(n);
         Variable assignmentTarget = (Variable) n.getRhs();
 
         if (boundVariables.contains(assignmentTarget)) {
@@ -20,7 +20,7 @@ public class ReassignmentChecker extends AstChecker {
         }
 
         boundVariables.add(assignmentTarget);
-        return true;
+        return otherResults;
 
 
     }

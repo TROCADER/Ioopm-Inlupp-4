@@ -10,13 +10,13 @@ public class NamedConstantChecker extends AstChecker {
 
     @Override
     public Boolean visit(Assignment n) {
-        super.visit(n);
+        boolean otherResults = super.visit(n);
         if (!(n.getRhs() instanceof Variable)) {
             wrongAssignments.add(n);
             return false;
         }
 
-        return true;
+        return otherResults;
     }
 
     public ArrayList<Assignment> getWrongAssignments() {
