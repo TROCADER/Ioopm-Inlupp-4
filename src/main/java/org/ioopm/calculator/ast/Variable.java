@@ -1,9 +1,8 @@
 package org.ioopm.calculator.ast;
 
 import org.ioopm.calculator.ast.visitor.Visitor;
-import org.ioopm.calculator.parser.Environment;
 
-public class Variable extends Atom {
+public class Variable extends Atom implements Comparable<Variable> {
     public Variable(String identifier) {
         this.identifier = identifier;
     }
@@ -15,12 +14,6 @@ public class Variable extends Atom {
         return identifier;
     }
 
-
-    @Override
-    public SymbolicExpression eval(Environment vars) {
-        // the nodes are immutable so it's fine to return
-        return vars.getOrDefault(this, this);
-    }
 
     @Override
     public boolean equals(Object obj) {
