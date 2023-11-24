@@ -43,7 +43,7 @@ public class Calculator {
             out.print("? ");
 
             try {
-                expr = parser.parse(scanner.nextLine(), vars);
+                expr = parser.parse(scanner);
             } catch (SyntaxErrorException | IllegalExpressionException exception) {
                 out.println(exception.getMessage());
                 continue;

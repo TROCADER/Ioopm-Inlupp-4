@@ -144,4 +144,24 @@ public class EvaluationVisitor implements Visitor<SymbolicExpression> {
     public SymbolicExpression visit(Vars n) {
         throw new RuntimeException("Can't eval() commands");
     }
+
+    @Override
+    public SymbolicExpression visit(FunctionDeclaration n) {
+        //TODO: don't allow global access and scoping
+
+        //TODO: Figure out how to handle unbound variables returned from the function
+        // EX:
+        // function foo()
+        //     x 
+        // end 
+        // foo() = y
+        // y // returns x
+        // 1 = x 
+        // y // should now not return
+        
+        vars.put(new Variable(n.getName()), n);
+
+        //TODO: Think about interaction with ans
+        return n;
+    }
 }

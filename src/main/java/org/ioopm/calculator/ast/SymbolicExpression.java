@@ -52,7 +52,6 @@ public abstract class SymbolicExpression {
     /**
      * Simplifies the expression as much as possible
      *
-     * @param vars the lexical enviorment
      * @return the simplified expression
      * @throws IllegalExpressionException when eval-ing a faulty Assignment
      * @throws RuntimeException           when eval-ing a command
