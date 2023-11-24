@@ -158,10 +158,9 @@ public class EvaluationVisitor implements Visitor<SymbolicExpression> {
         // y // returns x
         // 1 = x 
         // y // should now not return
-        
+
         vars.put(new Variable(n.getName()), n);
 
-        //TODO: Think about interaction with ans
-        return n;
+        return null;
     }
 }

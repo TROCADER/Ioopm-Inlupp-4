@@ -5,8 +5,8 @@ import org.ioopm.calculator.ast.visitor.Visitor;
 import java.util.ArrayList;
 
 public class FunctionDeclaration extends SymbolicExpression {
-    private String name;
-    private ArrayList<String> parameters;
+    private final String name;
+    private final ArrayList<String> parameters;
     private Sequence body = new Sequence();
 
     public FunctionDeclaration(String name, ArrayList<String> parameters) {
@@ -36,18 +36,27 @@ public class FunctionDeclaration extends SymbolicExpression {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("function ").append(name).append("(");
+        sb.append("function ").append(name);
+        sb.append(parametersToString());
+        sb.append("\n");
+        for (SymbolicExpression statement : body.getStatements()) {
+            sb.append(statement).append('\n');
+        }
+        return sb.append("end").toString();
+    }
+
+    private String parametersToString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("(");
         for (int i = 0; i < parameters.size(); i++) {
             sb.append(parameters.get(i));
             if (i != parameters.size() - 1) {
                 sb.append(", ");
             }
         }
-        sb.append(")\n");
-        for (SymbolicExpression statement : body.getStatements()) {
-            sb.append(statement).append('\n');
-        }
-        return sb.append("end").toString();
+
+        sb.append(")");
+        return sb.toString();
     }
 
     @Override
@@ -65,5 +74,9 @@ public class FunctionDeclaration extends SymbolicExpression {
     @Override
     public String getName() {
         return name;
+    }
+
+    public String shortToString() {
+        return "function " + getName() + parametersToString();
     }
 }

@@ -41,7 +41,6 @@ public class Calculator {
         while (running) {
             final SymbolicExpression expr;
             out.print("? ");
-
             try {
                 expr = parser.parse(scanner);
             } catch (SyntaxErrorException | IllegalExpressionException exception) {
@@ -74,11 +73,14 @@ public class Calculator {
                 }
 
                 final SymbolicExpression evaluated = new EvaluationVisitor(vars).evaluate(expr);
-                out.println(evaluated);
-                vars.put(new Variable("ans"), evaluated);
+                if (evaluated != null) {
+                    out.println(evaluated);
 
-                if (evaluated.isConstant()) {
-                    fullyEvaluated += 1;
+                    vars.put(new Variable("ans"), evaluated);
+
+                    if (evaluated.isConstant()) {
+                        fullyEvaluated += 1;
+                    }
                 }
             }
         }
