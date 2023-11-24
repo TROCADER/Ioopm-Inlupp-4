@@ -34,4 +34,6 @@ public interface Visitor<T> {
     public T visit(Vars n);
     
     public T visit(FunctionDeclaration n);
+
+    public T visit(Scope n);
 }

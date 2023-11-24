@@ -14,7 +14,7 @@ public class Environment extends HashMap<Variable, SymbolicExpression> {
         StringBuilder sb = new StringBuilder();
         sb.append("Variables: ");
         TreeSet<Variable> vars = new TreeSet<>(this.keySet());
-        for (Iterator<Variable> iter = vars.iterator(); iter.hasNext(); ) {
+        for (Iterator<Variable> iter = vars.iterator(); iter.hasNext();) {
             Variable v = iter.next();
 
             sb.append(v.getName());
@@ -32,5 +32,13 @@ public class Environment extends HashMap<Variable, SymbolicExpression> {
             }
         }
         return sb.toString();
+    }
+
+    public void pushEnvironment() {
+
+    }
+
+    public void popEnvironment() {
+
     }
 }

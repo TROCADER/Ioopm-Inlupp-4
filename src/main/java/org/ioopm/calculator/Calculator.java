@@ -5,7 +5,7 @@ import org.ioopm.calculator.ast.visitor.EvaluationVisitor;
 import org.ioopm.calculator.ast.visitor.NamedConstantChecker;
 import org.ioopm.calculator.ast.visitor.ReassignmentChecker;
 import org.ioopm.calculator.parser.CalculatorParser;
-import org.ioopm.calculator.parser.Environment;
+import org.ioopm.calculator.parser.EnvironmentScopes;
 import org.ioopm.calculator.parser.IllegalExpressionException;
 import org.ioopm.calculator.parser.SyntaxErrorException;
 
@@ -34,7 +34,8 @@ public class Calculator {
 
     public void runEventLoop() throws IOException {
         CalculatorParser parser = new CalculatorParser();
-        Environment vars = new Environment();
+        EnvironmentScopes vars = new EnvironmentScopes();
+        vars.pushEnvironment();
         out.println("Welcome to the Symbolic Calculator!");
 
         boolean running = true;
