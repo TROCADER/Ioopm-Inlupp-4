@@ -4,10 +4,7 @@ import org.ioopm.calculator.ast.*;
 import org.ioopm.calculator.ast.visitor.EvaluationVisitor;
 import org.ioopm.calculator.ast.visitor.NamedConstantChecker;
 import org.ioopm.calculator.ast.visitor.ReassignmentChecker;
-import org.ioopm.calculator.parser.CalculatorParser;
-import org.ioopm.calculator.parser.EnvironmentScopes;
-import org.ioopm.calculator.parser.IllegalExpressionException;
-import org.ioopm.calculator.parser.SyntaxErrorException;
+import org.ioopm.calculator.parser.*;
 
 import java.io.IOException;
 import java.io.PrintStream;
@@ -73,7 +70,15 @@ public class Calculator {
                     continue;
                 }
 
-                final SymbolicExpression evaluated = new EvaluationVisitor(vars).evaluate(expr);
+                SymbolicExpression evaluated = null;
+
+                try {
+                    evaluated = new EvaluationVisitor(vars).evaluate(expr);
+                } catch (WrongArgumentNumberException | IllegalExpressionException e) {
+                    out.println(e.getMessage());
+
+                }
+
                 if (evaluated != null) {
                     out.println(evaluated);
 

@@ -7,6 +7,8 @@ import org.ioopm.calculator.parser.IllegalExpressionException;
  * A mathematical expression or command
  */
 public abstract class SymbolicExpression {
+    public final static int MaxPriority = 0x7FFFFFFF;
+
     /**
      * @return if the node is a command
      */

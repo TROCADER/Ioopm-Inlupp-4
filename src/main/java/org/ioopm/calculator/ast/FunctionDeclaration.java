@@ -25,7 +25,7 @@ public class FunctionDeclaration extends SymbolicExpression {
 
     @Override
     public int getPriority() {
-        return 1_000_000_00;
+        return SymbolicExpression.MaxPriority;
     }
 
     @Override
@@ -61,7 +61,6 @@ public class FunctionDeclaration extends SymbolicExpression {
 
     @Override
     public boolean equals(Object obj) {
-        //TODO: Fix
         if (obj instanceof FunctionDeclaration other) {
             return this.name.equals(other.name)
                     && this.parameters.equals(other.parameters)
@@ -74,6 +73,14 @@ public class FunctionDeclaration extends SymbolicExpression {
     @Override
     public String getName() {
         return name;
+    }
+
+    public ArrayList<String> getParameters() {
+        return parameters;
+    }
+
+    public Sequence getBody() {
+        return body;
     }
 
     public String shortToString() {

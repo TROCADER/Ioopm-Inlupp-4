@@ -7,14 +7,14 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class ParserTests {
     CalculatorParser parser;
@@ -127,7 +127,36 @@ public class ParserTests {
     }
 
     @Test
-    void unbalancedbracesFail() throws IOException {
+    void unbalancedbracesFail() {
         assertThrowsExactly(SyntaxErrorException.class, () -> parser.parseLine("(1 = y"));
+    }
+
+
+    @ParameterizedTest
+    @ValueSource(strings = {"foo()", "bar(1, 1, 1)", "(foo)()", "(foo = x)()", "baz(a)", "baz()(c)", "{foo}(bla)"})
+    void canParseCall(String functionCall) throws IOException {
+        SymbolicExpression parsed = parser.parseLine(functionCall);
+
+        assertInstanceOf(FunctionCall.class, parsed);
+    }
+
+
+    private FunctionCall fnCall(SymbolicExpression callee, double arg) {
+        ArrayList<SymbolicExpression> arguments = new ArrayList<>();
+        arguments.add(new Constant(arg));
+        return new FunctionCall(callee, arguments);
+    }
+
+    @Test
+    void canParseNested() throws IOException {
+        SymbolicExpression parsed = parser.parseLine("bar(1)(2)(3)(4)");
+        SymbolicExpression bar = new Variable("bar");
+        assertEquals(fnCall(fnCall(fnCall(fnCall(bar, 1), 2), 3), 4), parsed);
+    }
+
+    @Test
+    void dontAcceptEmptyFunctionBodies() {
+        String function = "function func(a, b, q)\n end";
+        assertThrowsExactly(IllegalExpressionException.class, () -> parser.parse(new Scanner(function)));
     }
 }

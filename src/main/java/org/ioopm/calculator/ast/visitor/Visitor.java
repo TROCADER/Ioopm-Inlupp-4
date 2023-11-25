@@ -32,8 +32,12 @@ public interface Visitor<T> {
     public T visit(Variable n);
 
     public T visit(Vars n);
-    
+
     public T visit(FunctionDeclaration n);
 
     public T visit(Scope n);
+
+    public T visit(FunctionCall n);
+
+    public T visit(Sequence n);
 }

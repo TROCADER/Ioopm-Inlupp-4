@@ -101,4 +101,15 @@ public abstract class AstChecker implements Visitor<Boolean> {
     public Boolean visit(Scope n) {
         return n.getExp().accept(this);
     }
+
+    @Override
+    public Boolean visit(FunctionCall n) {
+        return n.getCallee().accept(this)
+                && n.getArguments().stream().allMatch(arg -> arg.accept(this));
+    }
+
+    @Override
+    public Boolean visit(Sequence n) {
+        return n.getStatements().stream().allMatch(arg -> arg.accept(this));
+    }
 }

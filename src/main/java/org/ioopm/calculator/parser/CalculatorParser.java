@@ -69,7 +69,9 @@ public class CalculatorParser {
                 body.add(bodyStmt);
             }
         }
-
+        if (body.getStatements().isEmpty()) {
+            throw new IllegalExpressionException("Error: function has no statements");
+        }
         return body;
     }
 
@@ -320,8 +322,7 @@ public class CalculatorParser {
             if (this.st.nextToken() != ')') {
                 throw new SyntaxErrorException("expected ')'");
             }
-        } 
-        else if (this.st.ttype == '{') {
+        } else if (this.st.ttype == '{') {
             this.st.nextToken();
             result = new Scope(assignment());
             /// This captures unbalanced curly brackets!
@@ -340,12 +341,39 @@ public class CalculatorParser {
                 result = unary();
             } else {
                 result = identifier();
+
             }
         } else {
             this.st.pushBack();
             result = number();
         }
+
+        if (this.st.nextToken() == '(') {
+            while (this.st.ttype == '(') {
+                result = new FunctionCall(result, argumentList());
+
+                this.st.nextToken();
+            }
+        } else {
+            st.pushBack();
+        }
         return result;
+    }
+
+    private ArrayList<SymbolicExpression> argumentList() throws IOException {
+        if (this.st.ttype != '(') {
+            throw new RuntimeException("Internal Parser Error: Expected (");
+        }
+
+        ArrayList<SymbolicExpression> arguments = new ArrayList<>();
+
+        boolean hasComma = true;
+        while (hasComma && this.st.nextToken() != ')') {
+            arguments.add(assignment());
+            hasComma = this.st.nextToken() == ',';
+        }
+
+        return arguments;
     }
 
     /**

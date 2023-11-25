@@ -19,8 +19,7 @@ public class Sequence extends SymbolicExpression {
 
     @Override
     public <T> T accept(Visitor<T> v) {
-        //TODO add to visitor
-        return null;
+        return v.visit(this);
     }
 
     @Override
@@ -32,7 +31,7 @@ public class Sequence extends SymbolicExpression {
         return sb.toString();
     }
 
-    public Iterable<SymbolicExpression> getStatements() {
+    public ArrayList<SymbolicExpression> getStatements() {
         return statements;
     }
 
