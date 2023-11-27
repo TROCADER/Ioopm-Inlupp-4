@@ -75,7 +75,7 @@ public class Calculator {
 
                 try {
                     evaluated = new EvaluationVisitor(vars).evaluate(expr);
-                } catch (WrongArgumentNumberException | IllegalExpressionException e) {
+                } catch (WrongArgumentNumberException | IllegalExpressionException | CallDepthExceededException e) {
                     out.println(e.getMessage());
 
                 }
