@@ -381,20 +381,20 @@ public class CalculatorParser {
                 result = unary();
             } else {
                 result = identifier();
-
+                // We only allow you to call identifiers or function calls
+                if (this.st.nextToken() == '(') {
+                    while (this.st.ttype == '(') {
+                        result = new FunctionCall(result, argumentList());
+                        this.st.nextToken(); // Consume ')'
+                    }
+                }
+                st.pushBack();
             }
         } else {
             this.st.pushBack();
             result = number();
         }
 
-        if (this.st.nextToken() == '(') {
-            while (this.st.ttype == '(') {
-                result = new FunctionCall(result, argumentList());
-                this.st.nextToken(); // Consume ')'
-            }
-        }
-        st.pushBack();
 
         return result;
     }

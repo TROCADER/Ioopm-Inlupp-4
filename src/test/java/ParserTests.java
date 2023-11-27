@@ -138,11 +138,17 @@ public class ParserTests {
 
 
     @ParameterizedTest
-    @ValueSource(strings = {"foo()", "bar(1, 1, 1)", "(foo)()", "(foo = x)()", "baz(a)", "baz()(c)", "{foo}(bla)"})
+    @ValueSource(strings = {"foo()", "bar(1, 1, 1)", "baz(a)", "baz()(c)"})
     void canParseCall(String functionCall) throws IOException {
         SymbolicExpression parsed = parser.parseLine(functionCall);
 
         assertInstanceOf(FunctionCall.class, parsed);
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"{foo}()", "{foo = x}(1, 1, 1)", "(baz)(a)", "bar("})
+    void cantParseWeirdCalls(String functionCall) throws IOException {
+        assertThrows(SyntaxErrorException.class, () -> parser.parseLine(functionCall));
     }
 
     @Test
