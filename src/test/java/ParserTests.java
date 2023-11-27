@@ -19,6 +19,11 @@ import static org.junit.jupiter.api.Assertions.*;
 public class ParserTests {
     CalculatorParser parser;
 
+    void assertRoundtrip(SymbolicExpression tree) throws IOException {
+        SymbolicExpression parsed = parser.parse(new Scanner(tree.toString()));
+        assertEquals(tree, parsed);
+    }
+
     @BeforeEach
     void initParser() {
         parser = new CalculatorParser();
@@ -140,6 +145,15 @@ public class ParserTests {
         assertInstanceOf(FunctionCall.class, parsed);
     }
 
+    @Test
+    void conditionalRoundtrip() throws IOException {
+        Scope thanBranch = new Scope(new Constant(10));
+        Scope elseBranch = new Scope(new Variable("x"));
+
+        SymbolicExpression tree = new Conditional(new Constant(1), Conditional.Comparison.Equals, new Variable("x"), thanBranch, elseBranch);
+
+        assertRoundtrip(tree);
+    }
 
     private FunctionCall fnCall(SymbolicExpression callee, double arg) {
         ArrayList<SymbolicExpression> arguments = new ArrayList<>();
