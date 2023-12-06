@@ -11,27 +11,30 @@ import java.util.TreeSet;
 public class Environment extends HashMap<Variable, SymbolicExpression> {
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("Variables: ");
+        StringBuilder strBld = new StringBuilder();
+
+        strBld.append("Variables: ");
         TreeSet<Variable> vars = new TreeSet<>(this.keySet());
+
         for (Iterator<Variable> iter = vars.iterator(); iter.hasNext();) {
-            Variable v = iter.next();
+            Variable var = iter.next();
 
-            sb.append(v.getName());
-            sb.append(" = ");
+            strBld.append(var.getName());
+            strBld.append(" = ");
 
-            SymbolicExpression varContent = this.get(v);
+            SymbolicExpression varContent = this.get(var);
             if (varContent instanceof FunctionDeclaration f) {
-                sb.append(f.shortToString());
+                strBld.append(f.shortToString());
             } else {
-                sb.append(varContent);
+                strBld.append(varContent);
             }
 
             if (iter.hasNext()) {
-                sb.append(", ");
+                strBld.append(", ");
             }
         }
-        return sb.toString();
+
+        return strBld.toString();
     }
 
     public void pushEnvironment() {

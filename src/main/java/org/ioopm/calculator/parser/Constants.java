@@ -12,7 +12,4 @@ public class Constants {
         Constants.namedConstants.put("L", 6.02214076e23);
         Constants.namedConstants.put("phi", 1.61803398875);
     }
-
-
 }
-
