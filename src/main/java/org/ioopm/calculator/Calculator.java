@@ -39,7 +39,7 @@ public class Calculator {
         boolean running = true;
         while (running) {
             final SymbolicExpression expr;
-            out.print("? ");
+            printSymbol('?');
             try {
                 expr = parser.parse(scanner);
             } catch (SyntaxErrorException | IllegalExpressionException | CallDepthExceededException exception) {
@@ -47,51 +47,78 @@ public class Calculator {
                 continue;
             }
 
-            if (expr.isCommand()) {
-                if (expr.equals(Clear.instance())) {
-                    vars.clear();
-                } else if (expr.equals(Quit.instance())) {
-                    running = false;
-                } else if (expr.equals(Vars.instance())) {
-                    out.println(vars);
-                } else {
-                    out.println("Not an implemented command");
-                }
-            } else {
-                enteredExpressions += 1;
-                NamedConstantChecker namedConstantChecker = new NamedConstantChecker();
-                if (!namedConstantChecker.check(expr)) {
-                    printNamedConstantError(namedConstantChecker);
-                    continue;
-                }
+            running = runEval(vars, running, expr);
+        }
 
-                ReassignmentChecker reassignmentChecker = new ReassignmentChecker();
-                if (!reassignmentChecker.check(expr)) {
-                    printReassignmentError(reassignmentChecker);
-                    continue;
-                }
+        printStatisics();
+    }
 
-                SymbolicExpression evaluated = null;
+    private void printSymbol(char symbol) {
+        out.print(symbol + " ");
+    }
 
-                try {
-                    evaluated = new EvaluationVisitor(vars).evaluate(expr);
-                } catch (WrongArgumentNumberException | IllegalExpressionException | CallDepthExceededException e) {
-                    out.println(e.getMessage());
+    private boolean runEval(EnvironmentScopes vars, boolean running, final SymbolicExpression expr) {
+        if (expr.isCommand()) {
+            running = handleCommand(vars, running, expr);
+        } else {
+            enteredExpressions += 1;
+            NamedConstantChecker namedConstantChecker = new NamedConstantChecker();
+            if (!namedConstantChecker.check(expr)) {
+                printNamedConstantError(namedConstantChecker);
+                return running;
+            }
 
-                }
+            ReassignmentChecker reassignmentChecker = new ReassignmentChecker();
+            if (!reassignmentChecker.check(expr)) {
+                printReassignmentError(reassignmentChecker);
+                return running;
+            }
 
-                if (evaluated != null) {
-                    out.println(evaluated);
+            SymbolicExpression evaluated = null;
 
-                    vars.put(new Variable("ans"), evaluated);
+            evaluated = evaluateExpr(vars, expr, evaluated);
 
-                    if (evaluated.isConstant()) {
-                        fullyEvaluated += 1;
-                    }
-                }
+            handleEval(vars, evaluated);
+        }
+
+        return running;
+    }
+
+    private boolean handleCommand(EnvironmentScopes vars, boolean running, final SymbolicExpression expr) {
+        if (expr.equals(Clear.instance())) {
+            vars.clear();
+        } else if (expr.equals(Quit.instance())) {
+            running = false;
+        } else if (expr.equals(Vars.instance())) {
+            out.println(vars);
+        } else {
+            out.println("Not an implemented command");
+        }
+
+        return running;
+    }
+
+    private SymbolicExpression evaluateExpr(EnvironmentScopes vars, final SymbolicExpression expr,
+            SymbolicExpression evaluated) {
+        try {
+            evaluated = new EvaluationVisitor(vars).evaluate(expr);
+        } catch (WrongArgumentNumberException | IllegalExpressionException | CallDepthExceededException e) {
+            out.println(e.getMessage());
+        }
+
+        return evaluated;
+    }
+
+    private void handleEval(EnvironmentScopes vars, SymbolicExpression evaluated) {
+        if (evaluated != null) {
+            out.println(evaluated);
+
+            vars.put(new Variable("ans"), evaluated);
+
+            if (evaluated.isConstant()) {
+                fullyEvaluated += 1;
             }
         }
-        printStatisics();
     }
 
     private void printNamedConstantError(NamedConstantChecker namedConstantChecker) {
@@ -109,7 +136,7 @@ public class Calculator {
             out.print("s");
         }
         out.print(" ");
-        for (Iterator<Variable> iterator = reassignedVariables.iterator(); iterator.hasNext(); ) {
+        for (Iterator<Variable> iterator = reassignedVariables.iterator(); iterator.hasNext();) {
             Variable v = iterator.next();
             out.print(v.toString());
 

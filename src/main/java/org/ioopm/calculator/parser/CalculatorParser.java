@@ -1,6 +1,5 @@
 package org.ioopm.calculator.parser;
 
-
 import org.ioopm.calculator.ast.*;
 
 import java.io.IOException;
@@ -74,16 +73,19 @@ public class CalculatorParser {
             SymbolicExpression bodyStmt = parseLine(scanner.nextLine());
 
             if (bodyStmt instanceof FunctionDeclaration nestedDecl) {
-                throw new SyntaxErrorException("Error: Can't nest function declaration, trying to nest " + nestedDecl.getName() + " in other function");
+                throw new SyntaxErrorException("Error: Can't nest function declaration, trying to nest "
+                        + nestedDecl.getName() + " in other function");
             }
 
             if (!(bodyStmt.equals(End.instance()))) {
                 body.add(bodyStmt);
             }
         }
+
         if (body.getStatements().isEmpty()) {
             throw new IllegalExpressionException("Error: function has no statements");
         }
+
         return body;
     }
 
@@ -100,6 +102,7 @@ public class CalculatorParser {
         this.st.ordinaryChar('/');
         this.st.eolIsSignificant(true);
         SymbolicExpression result = statement(); // calls to statement
+
         return result; // the final result
     }
 
@@ -108,11 +111,12 @@ public class CalculatorParser {
      *
      * @return a SymbolicExpression to be evaluated
      * @throws IOException          by nextToken() if it reads invalid input
-     * @throws SyntaxErrorException if the token parsed cannot be turned into a valid expression
+     * @throws SyntaxErrorException if the token parsed cannot be turned into a
+     *                              valid expression
      */
     private SymbolicExpression statement() throws IOException, IllegalExpressionException {
         SymbolicExpression result;
-        this.st.nextToken(); //kollar på nästa token som ligger på strömmen
+        this.st.nextToken(); // kollar på nästa token som ligger på strömmen
         if (this.st.ttype == this.st.TT_EOF) {
             throw new SyntaxErrorException("Error: Expected an expression");
         }
@@ -121,12 +125,16 @@ public class CalculatorParser {
             if (this.st.sval.equals(FUNCTION)) {
                 result = functionDeclaration();
                 this.isFunctionParsing = true;
-            } else if (this.st.sval.equals("Quit") || this.st.sval.equals("Vars") || this.st.sval.equals("Clear")) { // sval = string Variable
+            } else if (this.st.sval.equals("Quit") || this.st.sval.equals("Vars") || this.st.sval.equals("Clear")) { // sval
+                                                                                                                     // =
+                                                                                                                     // string
+                                                                                                                     // Variable
                 result = command();
             } else if (this.st.sval.equals("end")) {
                 if (!isFunctionParsing) {
                     throw new SyntaxErrorException("Error: end must have a corresponding function declaration");
                 }
+
                 isFunctionParsing = false;
                 result = command();
             } else {
@@ -143,6 +151,7 @@ public class CalculatorParser {
                 throw new SyntaxErrorException("Error: Unexpected '" + String.valueOf((char) this.st.ttype) + "'");
             }
         }
+
         return result;
     }
 
@@ -154,7 +163,6 @@ public class CalculatorParser {
             case StreamTokenizer.TT_NUMBER -> String.valueOf(this.st.nval);
             default -> String.valueOf((char) this.st.ttype);
         };
-
     }
 
     private String nonConstantIdentifier() throws IOException {
@@ -164,7 +172,6 @@ public class CalculatorParser {
         } else {
             throw new SyntaxErrorException("Error: Constant '" + nameExpression + "' can't be used as a function name");
         }
-
     }
 
     /**
@@ -190,8 +197,8 @@ public class CalculatorParser {
             hasComma = this.st.nextToken() == ',';
         }
 
-        Collection<DuplicatedParametersException.DuplicatedParameter> duplicated =
-                DuplicatedParametersException.calculateDuplicated(parameters);
+        Collection<DuplicatedParametersException.DuplicatedParameter> duplicated = DuplicatedParametersException
+                .calculateDuplicated(parameters);
 
         if (!duplicated.isEmpty()) {
             throw new DuplicatedParametersException(name, duplicated);
@@ -199,7 +206,6 @@ public class CalculatorParser {
 
         return new FunctionDeclaration(name, parameters);
     }
-
 
     /**
      * Checks what kind of command that should be returned
@@ -219,25 +225,29 @@ public class CalculatorParser {
         }
     }
 
-
     /**
      * Checks whether the token read is an assignment between 2 expression and
      * descend into the right hand side of '='
      *
      * @return a SymbolicExpression to be evaluated
      * @throws IOException          by nextToken() if it reads invalid input
-     * @throws SyntaxErrorException if the token parsed cannot be turned into a valid expression,
-     *                              the variable on rhs of '=' is a number or invalid variable
+     * @throws SyntaxErrorException if the token parsed cannot be turned into a
+     *                              valid expression,
+     *                              the variable on rhs of '=' is a number or
+     *                              invalid variable
      */
     private SymbolicExpression assignment() throws IOException, IllegalExpressionException {
         SymbolicExpression result = expression();
         this.st.nextToken();
         while (this.st.ttype == ASSIGNMENT) {
             this.st.nextToken();
+
             if (this.st.ttype == this.st.TT_NUMBER) {
                 throw new SyntaxErrorException("Error: Numbers cannot be used as a variable name");
             } else if (this.st.ttype != this.st.TT_WORD) {
-                throw new SyntaxErrorException("Error: Not a valid assignment of a variable"); //this handles faulty inputs after the equal sign eg. 1 = (x etc
+                throw new SyntaxErrorException("Error: Not a valid assignment of a variable"); // this handles faulty
+                                                                                               // inputs after the equal
+                                                                                               // sign eg. 1 = (x etc
             } else {
                 if (this.st.sval.equals("ans")) {
                     throw new SyntaxErrorException("Error: ans cannot be redefined");
@@ -248,18 +258,22 @@ public class CalculatorParser {
             this.st.nextToken();
         }
         this.st.pushBack();
+
         return result;
     }
 
     /**
      * Check if valid identifier for variable and return that if so
      *
-     * @return a SymbolicExpression that is either a named constant or a new variable
+     * @return a SymbolicExpression that is either a named constant or a new
+     *         variable
      * @throws IOException                by nextToken() if it reads invalid input
-     * @throws IllegalExpressionException if you try to redefine a string that isn't allowed
+     * @throws IllegalExpressionException if you try to redefine a string that isn't
+     *                                    allowed
      */
     private SymbolicExpression identifier() throws IOException, IllegalExpressionException {
         SymbolicExpression result;
+
         if (this.st.ttype != StreamTokenizer.TT_WORD) {
             throw new SyntaxErrorException("Error: Expected identifier, found " + foundToken());
         }
@@ -272,9 +286,9 @@ public class CalculatorParser {
         } else {
             result = new Variable(this.st.sval);
         }
+
         return result;
     }
-
 
     /**
      * Checks wether the token read is an addition or subtraction
@@ -286,9 +300,11 @@ public class CalculatorParser {
     private SymbolicExpression expression() throws IOException, IllegalExpressionException {
         SymbolicExpression result = term();
         this.st.nextToken();
+
         while (this.st.ttype == ADDITION || this.st.ttype == SUBTRACTION) {
             int operation = st.ttype;
             this.st.nextToken();
+
             if (operation == ADDITION) {
                 result = new Addition(result, term());
             } else {
@@ -297,6 +313,7 @@ public class CalculatorParser {
             this.st.nextToken();
         }
         this.st.pushBack();
+
         return result;
     }
 
@@ -311,6 +328,7 @@ public class CalculatorParser {
     private SymbolicExpression term() throws IOException, IllegalExpressionException {
         SymbolicExpression result = primary();
         this.st.nextToken();
+
         while (this.st.ttype == MULTIPLY || this.st.ttype == DIVISION) {
             int operation = st.ttype;
             this.st.nextToken();
@@ -323,6 +341,7 @@ public class CalculatorParser {
             this.st.nextToken();
         }
         this.st.pushBack();
+
         return result;
     }
 
@@ -335,11 +354,13 @@ public class CalculatorParser {
      *
      * @return a SymbolicExpression to be evaluated
      * @throws IOException          by nextToken() if it reads invalid input
-     * @throws SyntaxErrorException if the token parsed cannot be turned into a valid expression,
+     * @throws SyntaxErrorException if the token parsed cannot be turned into a
+     *                              valid expression,
      *                              missing right parantheses
      */
     private SymbolicExpression primary() throws IOException, IllegalExpressionException {
         SymbolicExpression result;
+
         if (this.st.ttype == '(') {
             this.st.nextToken();
             result = assignment();
@@ -353,25 +374,7 @@ public class CalculatorParser {
             result = unary();
         } else if (this.st.ttype == this.st.TT_WORD) {
             if (st.sval.equals(IF)) {
-                this.st.nextToken();
-                SymbolicExpression lhs = expression();
-                this.st.nextToken();
-                Conditional.Comparison comparison = comparison();
-
-                SymbolicExpression rhs = expression();
-                this.st.nextToken();
-
-                Scope thanBranch = scope();
-                this.st.nextToken();
-                if (this.st.ttype != this.st.TT_WORD || !this.st.sval.equals(ELSE)) {
-                    throw new SyntaxErrorException("Error: Expected else found " + foundToken());
-                }
-                this.st.nextToken();
-
-                Scope elseBranch = scope();
-
-                result = new Conditional(lhs, comparison, rhs, thanBranch, elseBranch);
-
+                result = ifBranch();
             } else if (st.sval.equals(SIN) ||
                     st.sval.equals(COS) ||
                     st.sval.equals(EXP) ||
@@ -395,7 +398,33 @@ public class CalculatorParser {
             result = number();
         }
 
+        return result;
+    }
 
+    private SymbolicExpression ifBranch() throws IOException {
+        SymbolicExpression result;
+
+        this.st.nextToken();
+        SymbolicExpression lhs = expression();
+
+        this.st.nextToken();
+        Conditional.Comparison comparison = comparison();
+
+        SymbolicExpression rhs = expression();
+        this.st.nextToken();
+
+        Scope thanBranch = scope();
+        this.st.nextToken();
+
+        if (this.st.ttype != this.st.TT_WORD || !this.st.sval.equals(ELSE)) {
+            throw new SyntaxErrorException("Error: Expected else found " + foundToken());
+        }
+
+        this.st.nextToken();
+
+        Scope elseBranch = scope();
+
+        result = new Conditional(lhs, comparison, rhs, thanBranch, elseBranch);
         return result;
     }
 
@@ -405,7 +434,7 @@ public class CalculatorParser {
             case '<' -> Conditional.Comparison.LessThan;
             case '=' -> Conditional.Comparison.Equals;
             default ->
-                    throw new SyntaxErrorException("Error: Expected one of '<' '<=' '>' '>=' '==' found " + foundToken());
+                throw new SyntaxErrorException("Error: Expected one of '<' '<=' '>' '>=' '==' found " + foundToken());
         };
         this.st.nextToken();
         if (this.st.ttype == '=') {
@@ -459,7 +488,6 @@ public class CalculatorParser {
             throw new RuntimeException("Parser Error: Consumed to much");
         }
 
-
         return arguments;
     }
 
@@ -475,6 +503,7 @@ public class CalculatorParser {
         int operationNeg = st.ttype;
         String operation = st.sval;
         this.st.nextToken();
+
         if (operationNeg == NEGATION || operation.equals(NEG)) {
             result = new Negation(primary());
         } else if (operation.equals(SIN)) {
@@ -486,19 +515,23 @@ public class CalculatorParser {
         } else {
             result = new Exp(primary());
         }
+
         return result;
     }
 
     /**
-     * Checks if the token read is a number - should always be a number in this method
+     * Checks if the token read is a number - should always be a number in this
+     * method
      *
      * @return a SymbolicExpression to be evaluated
      * @throws IOException          by nextToken() if it reads invalid input
-     * @throws SyntaxErrorException if the token parsed cannot be turned into a valid expression,
+     * @throws SyntaxErrorException if the token parsed cannot be turned into a
+     *                              valid expression,
      *                              expected a number which is not present
      */
     private SymbolicExpression number() throws IOException, IllegalExpressionException {
         this.st.nextToken();
+
         if (this.st.ttype == this.st.TT_NUMBER) {
             return new Constant(this.st.nval);
         } else {

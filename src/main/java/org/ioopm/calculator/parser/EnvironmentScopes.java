@@ -19,6 +19,7 @@ public class EnvironmentScopes extends Environment {
                 return stack.get(i).get(var);
             }
         }
+
         return null;
     }
 

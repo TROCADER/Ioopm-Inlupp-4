@@ -8,8 +8,7 @@ public class DuplicatedParametersException extends SyntaxErrorException {
     public record DuplicatedParameter(
             int originalIndex,
             int index,
-            String name
-    ) {
+            String name) {
     }
 
     String name;
@@ -27,7 +26,6 @@ public class DuplicatedParametersException extends SyntaxErrorException {
                 DuplicatedParameter duplicate = new DuplicatedParameter(original_index, i, paramName);
                 duplicated.add(duplicate);
             } else {
-
                 seenParameters.put(paramName, i);
             }
         }
